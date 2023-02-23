@@ -15,6 +15,7 @@ import (
 	"strings"
 	"sync"
 
+	"github.com/dimchansky/utfbom"
 	"github.com/klauspost/compress/gzip"
 
 	goavro "github.com/linkedin/goavro/v2"
@@ -39,6 +40,7 @@ var ReaderDocs = docs.FieldString(
 	"lines", "Consume the file in segments divided by linebreaks.",
 	"multipart", "Consumes the output of another codec and batches messages together. A batch ends when an empty message is consumed. For example, the codec `lines/multipart` could be used to consume multipart messages where an empty line indicates the end of each batch.",
 	"regex:(?m)^\\d\\d:\\d\\d:\\d\\d", "Consume the file in segments divided by regular expression.",
+	"skipbom", "Skip a byte order mark, this codec should precede another codec, e.g. `skipbom/csv`",
 	"tar", "Parse the file as a tar archive, and consume each file of the archive as a message.",
 )
 
@@ -195,6 +197,12 @@ func ioReader(codec string, conf ReaderConfig) (ioReaderConstructor, bool) {
 			return g, nil
 		}, true
 	}
+	if codec == "skipbom" {
+		return func(_ string, r io.ReadCloser) (io.ReadCloser, error) {
+			skipBom := ioReadCloserWrapper{Reader: utfbom.SkipOnly(r), underlying: r}
+			return &skipBom, nil
+		}, true
+	}
 	return nil, false
 }
 
@@ -335,6 +343,23 @@ func autoCodec(conf ReaderConfig) ReaderConstructor {
 		}
 		return ctor(path, r, fn)
 	}
+}
+
+//------------------------------------------------------------------------------
+
+// ioReadCloserWrapper is a helper that closes both the upper and underlying reader
+// when you are creating some sort of wrapped reader where you want to ensure both
+// are closed.
+type ioReadCloserWrapper struct {
+	io.Reader
+	underlying io.ReadCloser
+}
+
+func (w ioReadCloserWrapper) Close() error {
+	if rc, ok := w.Reader.(io.Closer); ok {
+		rc.Close()
+	}
+	return w.underlying.Close()
 }
 
 //------------------------------------------------------------------------------
