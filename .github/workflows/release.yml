@@ -43,6 +43,10 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   docker:
+    permissions:
+      contents: read
+      id-token: write
+
     runs-on: ubuntu-latest
     steps:
 
@@ -97,8 +101,8 @@ jobs:
     - name: auth to gcr 
       run: gcloud auth configure-docker us-docker.pkg.dev -q
 
-    - name: docker meta data
-      id: docker_meta_data
+    - name: docker meta
+      id: docker_meta
       uses: docker/metadata-action@v4
       with:
         images: sodahealth/benthos
