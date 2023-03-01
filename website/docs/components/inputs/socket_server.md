@@ -165,5 +165,3 @@ Whether to generate self signed certificates.
 
 Type: `bool`  
 Default: `false`  
-
-

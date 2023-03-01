@@ -145,5 +145,3 @@ Whether to delete downloaded objects from the bucket once they are processed.
 
 Type: `bool`  
 Default: `false`  
-
-

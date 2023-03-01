@@ -347,5 +347,3 @@ The maximum number of SQS messages to consume from each request.
 
 Type: `int`  
 Default: `10`  
-
-

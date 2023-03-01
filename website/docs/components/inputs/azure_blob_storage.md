@@ -184,5 +184,3 @@ Whether to delete downloaded objects from the blob once they are processed.
 
 Type: `bool`  
 Default: `false`  
-
-

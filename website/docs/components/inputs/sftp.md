@@ -261,5 +261,3 @@ A [cache resource](/docs/components/caches/about) for storing the paths of files
 
 Type: `string`  
 Default: `""`  
-
-

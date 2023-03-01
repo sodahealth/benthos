@@ -784,5 +784,3 @@ Must be larger than the largest line of the stream.
 
 Type: `int`  
 Default: `1000000`  
-
-
